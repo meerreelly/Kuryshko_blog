@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { getPaginationRowModel } from '@tanstack/vue-table'
+import { h, resolveComponent } from 'vue'
+import type { Row } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 import type Post from "~/types/Post/Post";
-
+const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
 const table = useTemplateRef('table')
 const columns: TableColumn<Post>[] = [
     {
@@ -42,8 +46,51 @@ const columns: TableColumn<Post>[] = [
                 })
             }
         }
+    },
+    {
+        id: 'actions',
+        cell: ({ row }) => {
+            return h(
+                'div',
+                { class: 'text-right' },
+                h(
+                    UDropdownMenu,
+                    {
+                        content: {
+                            align: 'end'
+                        },
+                        items: getRowItems(row),
+                        'aria-label': 'Actions dropdown'
+                    },
+                    () =>
+                        h(UButton, {
+                            icon: 'i-lucide-ellipsis-vertical',
+                            color: 'neutral',
+                            variant: 'ghost',
+                            class: 'ml-auto',
+                            'aria-label': 'Actions dropdown'
+                        })
+                )
+            )
+        }
     }
 ]
+
+function getRowItems(row: Row<Post>) {
+    return [
+        {
+            type: 'label',
+            label: 'Дії'
+        },
+        {
+            label: 'Переглянути пост',
+            onSelect() {
+                navigateTo('/post/' + row.getValue('id'))
+            }
+        }
+    ]
+}
+
 const { data, status } = await useFetch<Post[]>('http://localhost/api/blog/posts', {
     server:false,
 })
