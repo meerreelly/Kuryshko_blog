@@ -53,7 +53,6 @@ class CategoryController extends BaseController
     {
         //dd(__METHOD__);
         $data = $request->input(); //отримаємо масив даних, які надійшли з форми
-
         $item = (new BlogCategory())->create($data); //створюємо об'єкт і додаємо в БД
 
         if ($item) {
